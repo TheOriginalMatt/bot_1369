@@ -5,8 +5,8 @@ import time
 import sched
 import sys
 
-auth = tweepy.OAuthHandler('xPrQuyFZchSsPZPNPaxGPswOJ', 'gKbylT2vQ5FrW5LN4TVGeDuAJGUG7OeZaZ0xlO8t4CP7ukhBtU')
-auth.set_access_token('807662546035609600-TsM9nFnNSROw6MaekK5tULzWNk4qYgh', 'XYPctUGSHETmNT7p3nfnqCdDJIjPnuzeusXVZ8rDr7mzl')
+auth = tweepy.OAuthHandler('', '')
+auth.set_access_token('', '')
 api = tweepy.API(auth)
 
 conn = sqlite3.connect("Database.db")
