@@ -1,3 +1,4 @@
+#import libraries
 import random
 import sqlite3
 import tweepy
@@ -5,19 +6,19 @@ import time
 import sched
 import sys
 
+#twitter authentication
 auth = tweepy.OAuthHandler('', '')
 auth.set_access_token('', '')
 api = tweepy.API(auth)
 
+#connect to database
 conn = sqlite3.connect("Database.db")
 c = conn.cursor()
 print("Connected to database")
 
+#runs every few hours (spamming will cause twitter to take your dev account)
 scheduler = sched.scheduler(time.time, time.sleep)
 
-
-def status(tweet):
-    api.update_status(tweet)
 
 def insult():
     randInsult = random.randint(1, 60)
@@ -44,14 +45,14 @@ def insult():
 
     tweet += insult
     print(tweet)
-    #status(tweet)
+    api.update_status(tweet)
 
-#status(insult())
-#insult()
+#loops through each tweet, random intervals (1-24 hours between a tweet)
 def loop():
 
     while True:
-        delay = random.randint(1, 34) * 60 * 60
+        delay = random.randint(1, 24) * 60 * 60
+        #does not tweet between 8 and 12 (cause that is just plain rude)
         if (time.strftime("%H") + delay > 8):
             print( delay / 3600, " hrs")
             scheduler.enter(delay, 1, insult, ())
