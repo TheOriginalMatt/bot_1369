@@ -5,17 +5,17 @@ import time
 import sched
 import sys
 
-auth = tweepy.OAuthHandler('xPrQuyFZchSsPZPNPaxGPswOJ', 'gKbylT2vQ5FrW5LN4TVGeDuAJGUG7OeZaZ0xlO8t4CP7ukhBtU')
-auth.set_access_token('807662546035609600-TsM9nFnNSROw6MaekK5tULzWNk4qYgh', 'XYPctUGSHETmNT7p3nfnqCdDJIjPnuzeusXVZ8rDr7mzl')
+auth = tweepy.OAuthHandler('', '')
+auth.set_access_token('', '')
 api = tweepy.API(auth)
-
-conn = sqlite3.connect("Database.db")
-c = conn.cursor()
-print("Connected to database")
 
 scheduler = sched.scheduler(time.time, time.sleep)
 
 def getUser():
+    conn = sqlite3.connect("Database.db")
+    c = conn.cursor()
+    print("Connected to database")
+
     randUser = random.randint(1, 6)
     c.execute('SELECT handle FROM Users WHERE ID={};'.format(randUser))
     user = str(c.fetchall())
@@ -25,8 +25,23 @@ def getUser():
     del userArray[:3]
     user = "".join(userArray)
     return user
+    conn.close()
+
+def catalog(insult):
+    conn = sqlite3.connect("Database.db")
+    c = conn.cursor()
+    print("Connected to database")
+
+    print(time.strftime("%D : %H:%M:%S"))
+    date = str(time.strftime("%D : %H:%M:%S"))
+    c.execute('INSERT INTO Insult_Catalog (date, insult) VALUES (?, ?)',(date, insult,))
+    conn.commit()
+    conn.close()
 
 def createInsult():
+    conn = sqlite3.connect("Database.db")
+    c = conn.cursor()
+    print("Connected to database")
 
     endInsult = getUser() + " "
     randP1 = random.randint(1, 26)
@@ -50,7 +65,7 @@ def createInsult():
     endInsult += phrase2 + " "
 
     randP3 = random.randint(1, 26)
-    c.execute('SELECT phrase FROM phrase3 WHERE ID=8;'.format(randP3))
+    c.execute('SELECT phrase FROM phrase3 WHERE ID={};'.format(randP3))
     phrase3 = str(c.fetchall())
     phrase3Array = list(phrase3)
     p3length = len(phrase3Array)
@@ -69,7 +84,7 @@ def createInsult():
     phrase4 = "".join(phrase4Array)
     endInsult += phrase4 + " "
 
-    randP5 = random.randint(1, 1)
+    randP5 = random.randint(1, 15)
     c.execute('SELECT phrase FROM phrase5 WHERE ID={};'.format(randP5))
     phrase5 = str(c.fetchall())
     phrase5Array = list(phrase5)
@@ -78,9 +93,15 @@ def createInsult():
     del phrase5Array[:3]
     phrase5 = "".join(phrase5Array)
     endInsult += phrase5 + " "
-    print(endInsult)  
+    print(endInsult)
+    print(len(endInsult))
+    catalog(endInsult)
+    conn.close()
 
 def insult():
+    conn = sqlite3.connect("Database.db")
+    c = conn.cursor()
+    print("Connected to database")
     randInsult = random.randint(1, 60)
     tweet = getUser() + " "
 
@@ -97,6 +118,7 @@ def insult():
     tweet += insult
     print(time.strftime("%H : %M : %S"), ": ", tweet)
     #api.update_status(tweet)
+    conn.close()
 
 def loop():
 
@@ -114,4 +136,4 @@ def loop():
         scheduler.enter(delay, 1, insult, ())
         scheduler.run()
 
-loop()
+createInsult()
